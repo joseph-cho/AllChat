@@ -17,6 +17,11 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -27,6 +32,8 @@ public class RegisterActivity extends AppCompatActivity {
     private Button mCreateBtn;
 
     private Toolbar mToolbar;
+
+    private DatabaseReference mDB;
 
     //progress dialog
     private ProgressDialog mRegProgress;
@@ -96,21 +103,45 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
-    private void registerUser(String displayName, String email, String password) {
+    private void registerUser(final String displayName, String email, String password) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            mRegProgress.dismiss();
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "createUserWithEmail:success");
-                            Intent mainIntent = new Intent(RegisterActivity.this, MainActivity.class);
 
-                            //prevents user from pressing back and redirecting to starting page
-                            mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(mainIntent);
-                            finish();
+                            FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                            String uid = currentUser.getUid();
+
+                            //within the firebase db, step into the Users table
+                            //and get the child branch that pertains to this current user
+                            mDB = FirebaseDatabase.getInstance().getReference().child("Users").child(uid);
+
+                            //Create a hashmap with default values for the user's page
+                            HashMap<String, String> userMap = new HashMap<>();
+                            userMap.put("name", displayName);
+                            userMap.put("status", "Hi there! I'm using allChat.");
+                            userMap.put("image", "default");
+                            userMap.put("thumbnail", "default");
+
+                            mDB.setValue(userMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(task.isSuccessful()) {
+                                        mRegProgress.dismiss();
+
+                                        // Sign in success, update UI with the signed-in user's information
+                                        Log.d(TAG, "createUserWithEmail:success");
+                                        Intent mainIntent = new Intent(RegisterActivity.this, MainActivity.class);
+
+                                        //prevents user from pressing back and redirecting to starting page
+                                        mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        startActivity(mainIntent);
+                                        finish();
+                                    }
+                                }
+                            });
+
                         } else {
                             mRegProgress.hide();
                             // If sign in fails, display a message to the user.
