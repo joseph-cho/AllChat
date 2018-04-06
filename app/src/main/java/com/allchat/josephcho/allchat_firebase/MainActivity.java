@@ -71,13 +71,22 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    //handles what happens when the user interacts with
+    //the buttons in the top nav bar
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
 
+        //logout
         if(item.getItemId() == R.id.main_logout_button) {
             FirebaseAuth.getInstance().signOut();
             sendToStart();
+        }
+
+        //settings
+        if(item.getItemId() == R.id.main_settings_button) {
+            Intent settingsIntent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(settingsIntent);
         }
 
         return true;
