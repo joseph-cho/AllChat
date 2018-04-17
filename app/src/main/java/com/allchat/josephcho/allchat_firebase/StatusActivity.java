@@ -47,8 +47,12 @@ public class StatusActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Account Status");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        String existingStatus = getIntent().getStringExtra("existingStatus");
+
         mStatusInput = (TextInputEditText) findViewById(R.id.status_input);
         mStatusButton = (Button) findViewById(R.id.status_input_button);
+
+        mStatusInput.setText(existingStatus);
 
         mStatusButton.setOnClickListener(new View.OnClickListener() {
             @Override

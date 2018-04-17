@@ -69,7 +69,13 @@ public class SettingsActivity extends AppCompatActivity {
         mStatusButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String existingStatus = mStatus.getText().toString();
+
                 Intent statusIntent = new Intent(SettingsActivity.this, StatusActivity.class);
+
+                //package the pre-existing status in the intent so it can be retrieved
+                //from inside StatusActivity
+                statusIntent.putExtra("existingStatus", existingStatus);
                 startActivity(statusIntent);
             }
         });
