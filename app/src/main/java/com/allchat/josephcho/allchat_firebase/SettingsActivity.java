@@ -1,7 +1,10 @@
 package com.allchat.josephcho.allchat_firebase;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +26,7 @@ public class SettingsActivity extends AppCompatActivity {
     private CircleImageView mProfilePic;
     private TextView mName;
     private TextView mStatus;
+    private Button mStatusButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +36,8 @@ public class SettingsActivity extends AppCompatActivity {
         mProfilePic = (CircleImageView)findViewById(R.id.settings_image);
         mName = (TextView)findViewById(R.id.settings_name);
         mStatus = (TextView)findViewById(R.id.settings_status);
+
+        mStatusButton = (Button) findViewById(R.id.settings_status_button);
 
         mCurrentUser = FirebaseAuth.getInstance().getCurrentUser();
         String currentUserId = mCurrentUser.getUid();
@@ -56,6 +62,15 @@ public class SettingsActivity extends AppCompatActivity {
             //handles
             public void onCancelled(DatabaseError databaseError) {
 
+            }
+        });
+
+        //when you click on the "Change Status" button, start the status activity
+        mStatusButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent statusIntent = new Intent(SettingsActivity.this, StatusActivity.class);
+                startActivity(statusIntent);
             }
         });
     }
